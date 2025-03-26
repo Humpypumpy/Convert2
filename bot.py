@@ -1,13 +1,20 @@
 import os
+import threading
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils import executor
 from convert import convert_image
 from dotenv import load_dotenv
+from flask import Flask
 
 load_dotenv()
 bot = Bot(token=os.getenv("BOT_TOKEN"))
 dp = Dispatcher(bot)
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Image Converter Bot is running."
 
 @dp.message_handler(content_types=types.ContentType.DOCUMENT)
 async def handle_file(message: types.Message):
@@ -32,6 +39,12 @@ async def convert_handler(callback: types.CallbackQuery):
     os.remove(input_path)
     os.remove(output_path)
 
-if __name__ == "__main__":
-    os.makedirs("downloads", exist_ok=True)
+def run_flask():
+    app.run(host="0.0.0.0", port=10000)
+
+def run_bot():
     executor.start_polling(dp)
+
+if __name__ == "__main__":
+    threading.Thread(target=run_flask).start()
+    run_bot()
