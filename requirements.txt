@@ -1,0 +1,7 @@
+aiogram==2.25.1
+Pillow
+Flask
+python-dotenv
+pillow-avif-plugin
+pyheif
+imageio
